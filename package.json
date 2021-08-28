@@ -1,0 +1,23 @@
+{
+  "name": "ndz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js --no-watch",
+    "start": "node run.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "16.7.2",
+    "esbuild": "0.12.23",
+    "nodemon": "2.0.12",
+    "typescript": "4.4.2"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "0.20.5"
+  }
+}
