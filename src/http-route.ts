@@ -10,7 +10,7 @@ import {
   TNumber,
   TInteger,
   TBoolean,
-  TSchema,
+  TProperties,
 } from "@sinclair/typebox";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -31,13 +31,13 @@ type MapRouteParamsToSchema<TPath extends string> = TObject<
 >;
 
 type THeaders = TObject<Dictionary<TSchemaPrimitive>>;
-type TBody = TObject<Dictionary<TSchema>>;
-type TQuery = TObject<Dictionary<TSchema>>;
+type TBody = TObject<TProperties>;
+type TQuery = TObject<TProperties>;
 
 interface RouteDefinition<
   TMethod extends HttpMethod,
   TPath extends string,
-  TParamsSchema extends MapRouteParamsToSchema<TPath>,
+  TParamsSchema extends MapRouteParamsToSchema<TPath> | undefined = undefined,
   TBodySchema extends TBody | undefined = undefined,
   THeadersSchema extends THeaders | undefined = undefined,
   TQuerySchema extends TQuery | undefined = undefined
@@ -49,7 +49,7 @@ interface RouteDefinition<
       ? {}
       : {
           params: NoExtraFields<
-            TParamsSchema,
+            Exclude<TParamsSchema, undefined>,
             StringKeys<ParamsFromPath<TPath>>
           >;
         }) &
@@ -62,12 +62,18 @@ interface RouteDefinition<
         headers?: THeadersSchema;
       }
   >;
+  handler: (p: {
+    params: undefined extends TParamsSchema ? never : Static<TParamsSchema>;
+    body: undefined extends TBodySchema ? never : Static<TBodySchema>;
+    query: undefined extends TQuerySchema ? never : Static<TQuerySchema>;
+    headers: undefined extends THeadersSchema ? never : Static<THeadersSchema>;
+  }) => unknown;
 }
 
 export function route<
   TMethod extends HttpMethod,
   TPath extends string,
-  TParamsSchema extends MapRouteParamsToSchema<TPath>,
+  TParamsSchema extends MapRouteParamsToSchema<TPath> | undefined = undefined,
   TBodySchema extends TBody | undefined = undefined,
   THeadersSchema extends THeaders | undefined = undefined,
   TQuerySchema extends TQuery | undefined = undefined
@@ -116,5 +122,8 @@ route({
   path: "/users/:userId/projects/:projectId",
   schemes: {
     params: paramsSchema,
+    body: paramsSchema
+  },
+  handler(p) {
   },
 });
