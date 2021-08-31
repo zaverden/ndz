@@ -1,29 +1,16 @@
 declare namespace $ {
-  type Merge<Intersection, KeyTypes = string> = Intersection extends (
-    ...a: unknown[]
-  ) => unknown
+  type Merge<
+    Intersection,
+    D extends "deep" | "one-level" = "deep"
+  > = Intersection extends (...a: unknown[]) => unknown
     ? Intersection
     : Intersection extends new (...a: unknown[]) => unknown
     ? Intersection
     : Intersection extends object
     ? {
-        [Key in keyof Intersection as Key extends KeyTypes
-          ? Key
-          : never]: Merge<Intersection[Key]>;
-      }
-    : Intersection;
-
-  type OneLevelMerge<Intersection, KeyTypes = string> = Intersection extends (
-    ...a: unknown[]
-  ) => unknown
-    ? Intersection
-    : Intersection extends new (...a: unknown[]) => unknown
-    ? Intersection
-    : Intersection extends object
-    ? {
-        [Key in keyof Intersection as Key extends KeyTypes
-          ? Key
-          : never]: Intersection[Key];
+        [Key in keyof Intersection]: D extends "deep"
+          ? Merge<Intersection[Key]>
+          : Intersection[Key];
       }
     : Intersection;
 

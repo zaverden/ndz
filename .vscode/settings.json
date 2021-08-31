@@ -1,6 +1,10 @@
 {
   "cSpell.words": [
+    "abortable",
+    "deref",
     "esbuild",
-    "outfile"
-  ]
+    "outfile",
+    "typebox"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
