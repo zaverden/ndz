@@ -18,6 +18,9 @@
     "typescript": "4.4.2"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.20.5"
+    "@sinclair/typebox": "0.20.5",
+    "fastify": "3.20.2",
+    "nanoid": "3.1.25",
+    "ts-error": "1.0.6"
   }
 }
