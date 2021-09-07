@@ -3,8 +3,10 @@ import type { BookModel } from "./book-model";
 
 const booksStore = new SimpleStore<BookModel>("book");
 
-export const insertBook = booksStore.insert.bind(booksStore);
-export const listBooks = booksStore.getAll.bind(booksStore);
-export const getBook = booksStore.get.bind(booksStore);
-export const patchBook = booksStore.patch.bind(booksStore);
-export const deleteBook = booksStore.delete.bind(booksStore);
+export const Books = {
+  insert: booksStore.insert.bind(booksStore),
+  list: booksStore.getAll.bind(booksStore),
+  get: booksStore.get.bind(booksStore),
+  patch: booksStore.patch.bind(booksStore),
+  delete: booksStore.delete.bind(booksStore),
+};

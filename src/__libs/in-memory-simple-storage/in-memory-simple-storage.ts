@@ -1,10 +1,13 @@
-import { ExtendableError } from "ts-error";
+import { CustomError } from "@libs/custom-error";
 import { Result } from "@libs/result";
-import { createId } from "@libs/sequential-id";
 
 type BaseItem = { id: string };
+let nextId = 1000000000000000000;
+function createSimpleId() {
+  return (++nextId).toString();
+}
 
-export class ItemNotFoundError extends ExtendableError {
+export class ItemNotFoundError extends CustomError {
   entityName: string;
   id: string;
 
@@ -19,7 +22,7 @@ function extractId(data: Dictionary<unknown>): string {
   if (typeof data.id === "string") {
     return data.id;
   }
-  return createId();
+  return createSimpleId();
 }
 
 export class SimpleStore<TItem extends BaseItem> {
