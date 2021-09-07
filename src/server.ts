@@ -1,11 +1,7 @@
 import { booksRoutes } from "./api/books";
 import { server } from "./http";
 
-booksRoutes.forEach((routeDefinition) => {
-  server.route(routeDefinition);
-});
-
-server.listen(3000, () => {
+server.routes(booksRoutes).listen(3000, () => {
   console.log(process.pid, "listening");
 });
 
