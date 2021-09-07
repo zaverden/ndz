@@ -1,7 +1,6 @@
 import { Operation, Router } from "@libs/router";
 import { createServer as createHttpServer, Server } from "http";
-
-let i = 0;
+import { containsParams, parseRouteParams } from "./__libs/router/path";
 
 export function createServer(router: Router): Server {
   return createHttpServer((req, res) => {
@@ -11,7 +10,6 @@ export function createServer(router: Router): Server {
     });
 
     const url = new URL(req.url ?? "/", `http://${req.headers.host}`);
-
     const route = router.resolve(req.method as Operation, url.pathname);
 
     if (route == null) {
@@ -20,7 +18,11 @@ export function createServer(router: Router): Server {
       return;
     }
 
-    const result = route.handler({ params: { a: 1 } });
+    const result = route.handler({
+      params: containsParams(route.path)
+        ? parseRouteParams(route.path, url.pathname)
+        : undefined,
+    });
 
     if (typeof result === "object") {
       res.setHeader("Content-Type", "application/json");

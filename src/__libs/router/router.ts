@@ -1,4 +1,5 @@
 import { NonExhaustedSwitchError } from "@libs/non-exhausted-switch-error";
+import { splitPath } from "./path";
 import {
   Operation,
   RouteDefinition,
@@ -94,7 +95,7 @@ export class Router {
     >
   ): this {
     const { operation, path } = definition;
-    const segments = this._splitPath(path);
+    const segments = splitPath(path);
 
     let storesMap = this.opsMap.get(operation);
     if (storesMap == null) {
@@ -113,11 +114,7 @@ export class Router {
   }
 
   resolve(op: Operation, path: string): RoutePlaceholder | undefined {
-    const segments = this._splitPath(path);
+    const segments = splitPath(path);
     return this.opsMap.get(op)?.get(segments.length)?.get(segments);
-  }
-
-  _splitPath(path: string): string[] {
-    return path.split("/").filter((s) => s !== "");
   }
 }
