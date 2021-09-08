@@ -12,6 +12,7 @@ import { createGetRoute } from "./routes/get";
 import { createInsertRoute } from "./routes/insert";
 import { createPatchRoute } from "./routes/patch";
 import { createDeleteRoute } from "./routes/delete";
+import { createGetListRoute } from "./routes/get-list";
 
 interface CrudSchemas<
   TItemProps extends TProperties,
@@ -29,6 +30,7 @@ interface CrudHandlers<
   TPatchProps extends Undef<TProperties>
 > {
   get(id: string): Promise<Result<PStatic<TItemProps>, ErrorExt<R404>>>;
+  getList(): Promise<Array<PStatic<TItemProps>>>;
   insert(
     insertData: ResolveInsertModel<TItemProps, TInsertProps>
   ): Promise<PStatic<TItemProps>>;
@@ -59,6 +61,11 @@ export function crudRoutes<
   handlers,
 }: CrudRouteOptions<TItemProps, TInsertProps, TPatchProps>): RouteOptions[] {
   return [
+    createGetListRoute({
+      prefix,
+      itemSchema: schemas.item,
+      handler: handlers.getList,
+    }),
     createGetRoute({
       prefix,
       itemSchema: schemas.item,

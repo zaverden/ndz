@@ -2,7 +2,7 @@ import { CustomError } from "@libs/custom-error";
 import { Result } from "@libs/result";
 
 type BaseItem = { id: string };
-let nextId = 1000000000000000000;
+let nextId = 1000000000000000000n;
 function createSimpleId() {
   return (++nextId).toString();
 }
@@ -43,7 +43,7 @@ export class SimpleStore<TItem extends BaseItem> {
     return item;
   }
 
-  async getAll(): Promise<TItem[]> {
+  async getList(): Promise<TItem[]> {
     return Array.from(this._map.values());
   }
 
@@ -73,6 +73,7 @@ export class SimpleStore<TItem extends BaseItem> {
     if (!itemResult.ok) {
       return itemResult;
     }
+    this._map.delete(itemId);
     return Result.ok();
   }
 }
