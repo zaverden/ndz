@@ -6,8 +6,5 @@ export const booksRoutes = crudRoutes({
   schemas: {
     item: BookSchema,
   },
-  handlers: {
-    get: Books.get,
-    insert: Books.insert,
-  },
+  handlers: Books,
 });

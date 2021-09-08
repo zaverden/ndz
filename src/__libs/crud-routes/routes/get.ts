@@ -28,10 +28,10 @@ export function createGetRoute<TItemProps extends TProperties>({
       const itemId = req.params.id;
       const result = await handler(itemId);
       if (result.ok) {
-        return result.value;
+        reply.send(result.value);
+        return;
       }
-      reply.code(404);
-      return result.error.toObject?.() ?? result.error;
+      reply.code(404).send(result.error.toObject?.() ?? result.error);
     },
   });
 }

@@ -1,4 +1,4 @@
-import { Static, TObject, TProperties } from "@sinclair/typebox";
+import { Static, TObject, TPartial, TProperties } from "@sinclair/typebox";
 import { RouteGenericInterface, RouteOptions } from "fastify/types/route";
 import { FastifySchema } from "fastify/types/schema";
 import {
@@ -9,7 +9,9 @@ import {
   RawServerDefault,
 } from "fastify/types/utils";
 
-export type PStatic<TProps extends TProperties> = Flatten<Static<TObject<TProps>>>;
+export type PStatic<TProps extends TProperties> = Flatten<
+  Static<TObject<TProps>>
+>;
 export type ErrorExt<T> = Error & T & { toObject?: () => Error & T };
 
 export function checkFastifyRoute<
@@ -39,4 +41,13 @@ export type ResolveInsertModel<
   TInsertProps,
   PStatic<Exclude<TInsertProps, undefined>>,
   PStatic<Omit<TItemProps, "id">>
+>;
+
+export type ResolvePatchModel<
+  TItemProps extends TProperties,
+  TPatchProps extends Undef<TProperties>
+> = IfDef<
+  TPatchProps,
+  PStatic<Exclude<TPatchProps, undefined>>,
+  Flatten<Static<TObject<Omit<TPartial<TItemProps>, "id">>>>
 >;

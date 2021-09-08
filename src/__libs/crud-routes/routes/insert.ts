@@ -1,4 +1,4 @@
-import { TProperties, TObject, Type, Static } from "@sinclair/typebox";
+import { TProperties, TObject, Type } from "@sinclair/typebox";
 import { RouteOptions } from "fastify/types/route";
 import { checkFastifyRoute, PStatic, ResolveInsertModel } from "../utils";
 
@@ -34,8 +34,9 @@ export function createInsertRoute<
         200: itemSchema,
       },
     },
-    handler: async ({ body }) => {
-      return handler(body);
+    handler: async ({ body }, reply) => {
+      const inserted = await handler(body);
+      reply.send(inserted);
     },
   });
 }

@@ -3,6 +3,7 @@ import createFastify, { RouteOptions } from "fastify";
 
 const fastifyServer = createFastify({
   logger: true,
+  requestIdLogLabel: "requestId",
   genReqId(req) {
     const requestIdHeader = req.headers["request-id"];
     if (requestIdHeader == null) {
