@@ -9,7 +9,7 @@ import {
   ResolvePatchModel,
 } from "../utils";
 
-type PatchRouteOptions<
+export type PatchRouteOptions<
   TItemProps extends TProperties,
   TPatchProps extends Undef<TProperties>
 > = {

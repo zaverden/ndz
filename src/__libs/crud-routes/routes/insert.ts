@@ -2,7 +2,7 @@ import { TProperties, TObject, Type } from "@sinclair/typebox";
 import { RouteOptions } from "fastify/types/route";
 import { checkFastifyRoute, PStatic, ResolveInsertModel } from "../utils";
 
-type InsertRouteOptions<
+export type InsertRouteOptions<
   TItemProps extends TProperties,
   TInsertProps extends Undef<TProperties>
 > = {

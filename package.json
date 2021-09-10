@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.js --no-watch",
     "start": "node run.js",
+    "check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -14,6 +14,15 @@ const fastifyServer = createFastify({
     }
     return requestIdHeader[0];
   },
+  ajv: {
+    customOptions: {
+      removeAdditional: "failing",
+      useDefaults: true,
+      coerceTypes: true,
+      allErrors: false,
+      nullable: true,
+    },
+  },
 });
 type FastifyServer = typeof fastifyServer;
 

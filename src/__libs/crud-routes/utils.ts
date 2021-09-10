@@ -34,6 +34,12 @@ export function checkFastifyRoute<
   return options as unknown as RouteOptions;
 }
 
+export type ResolveFilterModel<TFilterProps extends Undef<TProperties>> = IfDef<
+  TFilterProps,
+  PStatic<Exclude<TFilterProps, undefined>>,
+  {}
+>;
+
 export type ResolveInsertModel<
   TItemProps extends TProperties,
   TInsertProps extends Undef<TProperties>

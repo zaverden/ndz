@@ -4,7 +4,7 @@ import { R404 } from "@libs/shared-schemas";
 import { TObject, TProperties } from "@sinclair/typebox";
 import { PStatic, ErrorExt, checkFastifyRoute } from "../utils";
 
-type GetRouteOptions<TItemProps extends TProperties> = {
+export type GetRouteOptions<TItemProps extends TProperties> = {
   prefix: string;
   itemSchema: TObject<TItemProps>;
   handler: (id: string) => Promise<Result<PStatic<TItemProps>, ErrorExt<R404>>>;

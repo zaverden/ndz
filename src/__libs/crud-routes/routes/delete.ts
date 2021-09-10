@@ -4,7 +4,7 @@ import { R404 } from "@libs/shared-schemas";
 import { ErrorExt, checkFastifyRoute } from "../utils";
 import { Type } from "@sinclair/typebox";
 
-type DeleteRouteOptions = {
+export type DeleteRouteOptions = {
   prefix: string;
   handler: (id: string) => Promise<Result<void, ErrorExt<R404>>>;
 };
