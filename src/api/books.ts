@@ -1,5 +1,27 @@
-import { Books, BookSchema } from "@libs/books-service";
 import { crudRoutes } from "@libs/crud-routes";
+import { SimpleStore } from "@libs/in-memory-simple-storage";
+import { Static, Type } from "@libs/typebox";
+
+const BookSchema = Type.Object(
+  {
+    id: Type.String(),
+    title: Type.String(),
+    year: Type.Integer(),
+    contactEmail: Type.String({ format: "email" }),
+    authors: Type.Array(
+      Type.Object({
+        firstName: Type.String(),
+        lastName: Type.String(),
+      })
+    ),
+  },
+  {
+    additionalProperties: false,
+  }
+);
+type BookModel = Flatten<Static<typeof BookSchema>>;
+
+const booksStore = new SimpleStore<BookModel>("book");
 
 export const booksRoutes = crudRoutes({
   prefix: "/books",
@@ -8,5 +30,5 @@ export const booksRoutes = crudRoutes({
   schemas: {
     item: BookSchema,
   },
-  handlers: Books,
+  handlers: booksStore.bind(),
 });

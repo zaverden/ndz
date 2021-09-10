@@ -98,7 +98,6 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": ".",
     "paths": {
-      "@libs/books-service": ["src/__libs/books-service/__entry.ts"],
       "@libs/crud-routes": ["src/__libs/crud-routes/__entry.ts"],
       "@libs/custom-error": ["src/__libs/custom-error/custom-error.ts"],
       "@libs/in-memory-simple-storage": [

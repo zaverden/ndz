@@ -25,6 +25,11 @@ function extractId(data: Dictionary<unknown>): string {
   return createSimpleId();
 }
 
+type BoundStore<TItem extends BaseItem> = Omit<
+  SimpleStore<TItem>,
+  "_entityName" | "_map" | "bind"
+>;
+
 export class SimpleStore<TItem extends BaseItem> {
   _entityName: string;
   _map = new Map<string, TItem>();
@@ -75,5 +80,15 @@ export class SimpleStore<TItem extends BaseItem> {
     }
     this._map.delete(itemId);
     return Result.ok();
+  }
+
+  bind(): BoundStore<TItem> {
+    return {
+      insert: this.insert.bind(this),
+      getList: this.getList.bind(this),
+      get: this.get.bind(this),
+      patch: this.patch.bind(this),
+      delete: this.delete.bind(this),
+    };
   }
 }
