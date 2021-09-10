@@ -55,8 +55,9 @@ class TypeBuilderExt extends TypeBuilder {
       {
         ...options,
         // @ts-expect-error additionalProperties has wrong type in typebox
-        additionalProperties: (options?.additionalProperties ??
-          this._mergeAdditionalProperties(schemas)),
+        additionalProperties:
+          options?.additionalProperties ??
+          this._mergeAdditionalProperties(schemas),
       }
     );
     mergedSchema.properties = properties;
@@ -64,8 +65,8 @@ class TypeBuilderExt extends TypeBuilder {
     return mergedSchema as TMergedObject<T>;
   }
 
-  public EmptyObject() {
-    return this.Object({});
+  public EmptyObject(options?: ObjectOptions) {
+    return this.Object({}, options);
   }
 
   _mergeAdditionalProperties(

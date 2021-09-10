@@ -50,17 +50,12 @@ export function createGetListRoute<
   TSortKeys
 >): RouteOptions {
   const pagingSchema = withPaging ? TypeExt.PagingSchema() : Type.EmptyObject();
-
   const listSchema = TypeExt.ListSchema(itemSchema);
-  const querySchema = Type.Merge(
-    [
-      pagingSchema,
-      sortKeys?.length > 0
-        ? TypeExt.SortingSchema(sortKeys)
-        : Type.EmptyObject(),
-      filterSchema ?? Type.EmptyObject(),
-    ],
-  );
+  const querySchema = Type.Merge([
+    pagingSchema,
+    sortKeys?.length > 0 ? TypeExt.SortingSchema(sortKeys) : Type.EmptyObject(),
+    filterSchema ?? Type.EmptyObject({ additionalProperties: false }),
+  ]);
 
   return checkFastifyRoute<{
     Params: { id: string };
