@@ -106,7 +106,8 @@
       ],
       "@libs/result": ["src/__libs/result/result.ts"],
       "@libs/sequential-id": ["src/__libs/sequential-id/sequential-id.ts"],
-      "@libs/shared-schemas": ["src/__libs/shared-schemas/__entry.ts"]
+      "@libs/shared-schemas": ["src/__libs/shared-schemas/__entry.ts"],
+      "@libs/typebox": ["src/__libs/typebox/typebox.ts"]
     }
   }
 }
