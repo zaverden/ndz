@@ -1,20 +1,9 @@
 import { Result } from "@libs/result";
 import { CompareFn, compareItems } from "./compare";
 import { ItemNotFoundError } from "./errors";
+import { ItemMatchFn } from "./filter";
 import { BaseItem, extractId } from "./id";
 import { getPage } from "./paging";
-
-type BoundStore<
-  TItem extends BaseItem,
-  TPaging extends Undef<PagingOptions>,
-  TFilter
-> = Omit<SimpleStore<TItem, TPaging, TFilter>, "bind">;
-
-type ItemMatchFn<TItem extends BaseItem, TFilter> = (
-  item: TItem,
-  filter: TFilter
-) => boolean;
-
 
 type GetListOptions<TPaging extends Undef<PagingOptions>, TFilter> = {
   filter: TFilter;
@@ -79,7 +68,7 @@ export class SimpleStore<
     console.log(arguments);
     console.log("===============================================");
     const filtered = Array.from(this._map.values()).filter((item) =>
-      this._match(item, filter)
+      this._match(filter, item)
     );
     const sortKey = sort?.$sortKey;
     const sortOrder = sort?.$sortOrder ?? "asc";
@@ -146,3 +135,9 @@ export class SimpleStore<
     };
   }
 }
+
+type BoundStore<
+  TItem extends BaseItem,
+  TPaging extends Undef<PagingOptions>,
+  TFilter
+> = Omit<SimpleStore<TItem, TPaging, TFilter>, "bind">;

@@ -1,5 +1,5 @@
 import { crudRoutes } from "@libs/crud-routes";
-import { SimpleComparer, SimpleStore } from "@libs/in-memory-simple-storage";
+import { NullOr, SimpleComparer, SimpleStore } from "@libs/in-memory-simple-storage";
 import { Static, Type } from "@libs/typebox";
 
 const BookSchema = Type.Object(
@@ -38,16 +38,7 @@ const BookFilterSchema = Type.Partial(
 type BookModel = Flatten<Static<typeof BookSchema>>;
 type BookFilterModel = Flatten<Static<typeof BookFilterSchema>>;
 
-const NullOr = {
-  eq<T>(f: Undef<T>, v: Undef<T>): boolean {
-    return f == null || f === v;
-  },
-  contains(f: Undef<string>, v: Undef<string>): boolean {
-    return f == null || (v ?? "").includes(f);
-  },
-};
-
-function matchBook(book: BookModel, filter: BookFilterModel) {
+function matchBook(filter: BookFilterModel, book: BookModel) {
   return (
     NullOr.eq(filter.id, book.id) &&
     NullOr.eq(filter.year, book.year) &&
