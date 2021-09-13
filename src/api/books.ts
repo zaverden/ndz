@@ -1,5 +1,5 @@
 import { crudRoutes } from "@libs/crud-routes";
-import { SimpleStore } from "@libs/in-memory-simple-storage";
+import { SimpleComparer, SimpleStore } from "@libs/in-memory-simple-storage";
 import { Static, Type } from "@libs/typebox";
 
 const BookSchema = Type.Object(
@@ -59,6 +59,16 @@ function matchBook(book: BookModel, filter: BookFilterModel) {
 const booksStore = new SimpleStore({
   entityName: "book",
   match: matchBook,
+  compare: (key, left, right) => {
+    if (key === "authorsCount") {
+      return SimpleComparer.number(
+        left.authors.length,
+        right.authors.length
+      );
+    }
+    // default
+    return undefined;
+  },
   paging: {
     defaultPageSize: 20,
   },
@@ -67,7 +77,7 @@ const booksStore = new SimpleStore({
 export const booksRoutes = crudRoutes({
   prefix: "/books",
   withPaging: true,
-  sortKeys: [],
+  sortKeys: ["title", "authorsCount"],
   schemas: {
     item: BookSchema,
     filter: BookFilterSchema,

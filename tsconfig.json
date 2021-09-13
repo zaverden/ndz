@@ -101,7 +101,7 @@
       "@libs/crud-routes": ["src/__libs/crud-routes/__entry.ts"],
       "@libs/custom-error": ["src/__libs/custom-error/custom-error.ts"],
       "@libs/in-memory-simple-storage": [
-        "src/__libs/in-memory-simple-storage/in-memory-simple-storage.ts"
+        "src/__libs/in-memory-simple-storage/__entry.ts"
       ],
       "@libs/result": ["src/__libs/result/result.ts"],
       "@libs/sequential-id": ["src/__libs/sequential-id/sequential-id.ts"],

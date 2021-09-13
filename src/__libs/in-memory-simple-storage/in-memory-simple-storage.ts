@@ -1,29 +1,8 @@
-import { CustomError } from "@libs/custom-error";
 import { Result } from "@libs/result";
-
-type BaseItem = { id: string };
-let nextId = 1000000000000000000n;
-function createSimpleId() {
-  return (++nextId).toString();
-}
-
-export class ItemNotFoundError extends CustomError {
-  entityName: string;
-  id: string;
-
-  constructor(entityName: string, id: string) {
-    super(`${entityName} [${id}] not found.`);
-    this.entityName = entityName;
-    this.id = id;
-  }
-}
-
-function extractId(data: Dictionary<unknown>): string {
-  if (typeof data.id === "string") {
-    return data.id;
-  }
-  return createSimpleId();
-}
+import { CompareFn, compareItems } from "./compare";
+import { ItemNotFoundError } from "./errors";
+import { BaseItem, extractId } from "./id";
+import { getPage } from "./paging";
 
 type BoundStore<
   TItem extends BaseItem,
@@ -35,6 +14,7 @@ type ItemMatchFn<TItem extends BaseItem, TFilter> = (
   item: TItem,
   filter: TFilter
 ) => boolean;
+
 
 type GetListOptions<TPaging extends Undef<PagingOptions>, TFilter> = {
   filter: TFilter;
@@ -54,11 +34,8 @@ type SimpleStoreOptions<
   entityName: string;
   match?: ItemMatchFn<TItem, TFilter>;
   paging?: TPaging;
+  compare?: CompareFn<TItem>;
 };
-
-function getPage<T>(items: T[], skip: number, pageSize: number): T[] {
-  return items.slice(skip, skip + pageSize);
-}
 
 export class SimpleStore<
   TItem extends BaseItem,
@@ -67,16 +44,19 @@ export class SimpleStore<
 > {
   private _entityName: string;
   private _match: ItemMatchFn<TItem, TFilter>;
+  private _compare: CompareFn<TItem>;
   private _defaultPageSize: Undef<number>;
   private _map = new Map<string, TItem>();
 
   constructor({
     entityName,
     match,
+    compare,
     paging,
   }: SimpleStoreOptions<TItem, TPaging, TFilter>) {
     this._entityName = entityName;
     this._match = match ?? (() => true);
+    this._compare = compare ?? (() => undefined);
     this._defaultPageSize = paging?.defaultPageSize;
   }
 
@@ -93,6 +73,7 @@ export class SimpleStore<
   async getList({
     filter,
     paging,
+    sort,
   }: GetListOptions<TPaging, TFilter>): Promise<TItem[]> {
     console.log("===============================================");
     console.log(arguments);
@@ -100,11 +81,25 @@ export class SimpleStore<
     const filtered = Array.from(this._map.values()).filter((item) =>
       this._match(item, filter)
     );
+    const sortKey = sort?.$sortKey;
+    const sortOrder = sort?.$sortOrder ?? "asc";
+    const sortOrderCorrection = sortOrder === "desc" ? -1 : 1;
+    const sorted =
+      sortKey === undefined
+        ? filtered
+        : filtered.sort((left, right) => {
+            const temp =
+              this._compare(sortKey, left, right) ??
+              compareItems(sortKey, left, right);
+            const result =
+              typeof temp === "string" ? compareItems(temp, left, right) : temp;
+            return result * sortOrderCorrection;
+          });
     const paged =
       this._defaultPageSize == null
-        ? filtered
+        ? sorted
         : getPage(
-            filtered,
+            sorted,
             paging?.$skip ?? 0,
             paging?.$pageSize ?? this._defaultPageSize
           );
