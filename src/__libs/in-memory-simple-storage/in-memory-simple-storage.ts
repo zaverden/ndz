@@ -25,17 +25,59 @@ function extractId(data: Dictionary<unknown>): string {
   return createSimpleId();
 }
 
-type BoundStore<TItem extends BaseItem> = Omit<
-  SimpleStore<TItem>,
-  "_entityName" | "_map" | "bind"
->;
+type BoundStore<
+  TItem extends BaseItem,
+  TPaging extends Undef<PagingOptions>,
+  TFilter
+> = Omit<SimpleStore<TItem, TPaging, TFilter>, "bind">;
 
-export class SimpleStore<TItem extends BaseItem> {
-  _entityName: string;
-  _map = new Map<string, TItem>();
+type ItemMatchFn<TItem extends BaseItem, TFilter> = (
+  item: TItem,
+  filter: TFilter
+) => boolean;
 
-  constructor(entityName: string) {
+type GetListOptions<TPaging extends Undef<PagingOptions>, TFilter> = {
+  filter: TFilter;
+  sort?: { $sortKey?: string; $sortOrder?: "asc" | "desc" };
+  paging: IfDef<TPaging, { $skip?: number; $pageSize?: number }, void>;
+};
+
+type PagingOptions = {
+  defaultPageSize: number;
+};
+
+type SimpleStoreOptions<
+  TItem extends BaseItem,
+  TPaging extends Undef<PagingOptions>,
+  TFilter
+> = {
+  entityName: string;
+  match?: ItemMatchFn<TItem, TFilter>;
+  paging?: TPaging;
+};
+
+function getPage<T>(items: T[], skip: number, pageSize: number): T[] {
+  return items.slice(skip, skip + pageSize);
+}
+
+export class SimpleStore<
+  TItem extends BaseItem,
+  TPaging extends Undef<PagingOptions> = undefined,
+  TFilter = {}
+> {
+  private _entityName: string;
+  private _match: ItemMatchFn<TItem, TFilter>;
+  private _defaultPageSize: Undef<number>;
+  private _map = new Map<string, TItem>();
+
+  constructor({
+    entityName,
+    match,
+    paging,
+  }: SimpleStoreOptions<TItem, TPaging, TFilter>) {
     this._entityName = entityName;
+    this._match = match ?? (() => true);
+    this._defaultPageSize = paging?.defaultPageSize;
   }
 
   async insert(itemData: Omit<TItem, "id">): Promise<TItem> {
@@ -48,8 +90,25 @@ export class SimpleStore<TItem extends BaseItem> {
     return item;
   }
 
-  async getList(): Promise<TItem[]> {
-    return Array.from(this._map.values());
+  async getList({
+    filter,
+    paging,
+  }: GetListOptions<TPaging, TFilter>): Promise<TItem[]> {
+    console.log("===============================================");
+    console.log(arguments);
+    console.log("===============================================");
+    const filtered = Array.from(this._map.values()).filter((item) =>
+      this._match(item, filter)
+    );
+    const paged =
+      this._defaultPageSize == null
+        ? filtered
+        : getPage(
+            filtered,
+            paging?.$skip ?? 0,
+            paging?.$pageSize ?? this._defaultPageSize
+          );
+    return paged;
   }
 
   async get(itemId: string): Promise<Result<TItem, ItemNotFoundError>> {
@@ -82,7 +141,7 @@ export class SimpleStore<TItem extends BaseItem> {
     return Result.ok();
   }
 
-  bind(): BoundStore<TItem> {
+  bind(): BoundStore<TItem, TPaging, TFilter> {
     return {
       insert: this.insert.bind(this),
       getList: this.getList.bind(this),

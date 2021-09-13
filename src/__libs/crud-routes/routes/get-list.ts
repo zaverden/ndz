@@ -8,11 +8,12 @@ type GetListQueryModel<TSortKeys extends string> = Static<TPagingSchema> &
 
 export type GetListHandlerOptions<
   TFilterProps extends Undef<TProperties>,
+  TWithPaging extends boolean,
   TSortKeys extends string
 > = {
   filter: ResolveFilterModel<TFilterProps>;
   sort: Static<TSortingSchema<TSortKeys>>;
-  paging: Static<TPagingSchema>;
+  paging: If<TWithPaging, Static<TPagingSchema>, void>;
 };
 
 export type GetListRouteOptions<
@@ -27,7 +28,7 @@ export type GetListRouteOptions<
   sortKeys: TSortKeys[];
   filterSchema?: IfDef<TFilterProps, TObject<Exclude<TFilterProps, undefined>>>;
   handler: (
-    options: GetListHandlerOptions<TFilterProps, TSortKeys>
+    options: GetListHandlerOptions<TFilterProps, TWithPaging, TSortKeys>
   ) => Promise<Array<PStatic<TItemProps>>>;
 };
 
@@ -74,7 +75,11 @@ export function createGetListRoute<
       const list = await handler({
         filter: filter as ResolveFilterModel<TFilterProps>,
         sort: { $sortKey, $sortOrder },
-        paging: withPaging ? { $skip, $pageSize } : {},
+        paging: (withPaging ? { $skip, $pageSize } : undefined) as If<
+          TWithPaging,
+          Static<TPagingSchema>,
+          void
+        >,
       });
       reply.send({
         list,
